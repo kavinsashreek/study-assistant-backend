@@ -3,14 +3,16 @@ import re
 import os
 import pytesseract
 from PIL import Image, ImageEnhance, ImageFilter
-import tempfile
+import platform
 
-# Set Tesseract path
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-
-# Set Poppler path
-POPPLER_PATH = r'C:\poppler\poppler-25.12.0\Library\bin'
-
+# Cross-platform setup for OCR (Works locally and on the Cloud!)
+if platform.system() == "Windows":
+    # Local Windows paths
+    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+    POPPLER_PATH = r'C:\poppler\poppler-25.12.0\Library\bin'
+else:
+    # Cloud Linux paths (for Render deployment)
+    POPPLER_PATH = None
 
 def extract_text_from_pdf(file_path: str) -> str:
     """
@@ -43,7 +45,6 @@ def extract_text_from_pdf(file_path: str) -> str:
     print("🔍 Scanned PDF detected! Switching to OCR mode...")
     return extract_text_with_ocr(file_path)
 
-
 def preprocess_image(image):
     """
     Improves image quality before OCR.
@@ -67,7 +68,6 @@ def preprocess_image(image):
     image = image.point(lambda x: 0 if x < 140 else 255, '1')
 
     return image
-
 
 def extract_text_with_ocr(file_path: str) -> str:
     """
@@ -121,7 +121,6 @@ def extract_text_with_ocr(file_path: str) -> str:
             "Please make sure Tesseract and Poppler are installed correctly!"
         )
 
-
 def fix_ocr_errors(text: str) -> str:
     """
     Fixes common OCR mistakes.
@@ -150,13 +149,11 @@ def fix_ocr_errors(text: str) -> str:
 
     return '\n'.join(cleaned_lines)
 
-
 def clean_text(text: str) -> str:
     """Cleans up extracted text."""
     text = re.sub(r' +', ' ', text)
     text = re.sub(r'\n{3,}', '\n\n', text)
     return text.strip()
-
 
 def chunk_text(text: str, chunk_size: int = 300, overlap: int = 30) -> list[str]:
     """Cuts text into smaller searchable chunks."""
@@ -180,7 +177,6 @@ def chunk_text(text: str, chunk_size: int = 300, overlap: int = 30) -> list[str]
         start_index += (chunk_size - overlap)
 
     return chunks
-
 
 def process_pdf(file_path: str) -> dict:
     """Main function that processes any PDF automatically."""

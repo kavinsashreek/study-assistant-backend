@@ -1,10 +1,21 @@
+# Environments
 venv/
-__pycache__/
-.pyc
+env/
 .env
-chromadb/
-tempuploads/
-.egg-info/
-dist/
-build/
-.DSStore
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+*.egg
+
+# Project specific
+chroma_db/
+temp_uploads/
+
+# OS generated files
+.DS_Store
+Thumbs.db
